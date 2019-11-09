@@ -60,8 +60,6 @@ public class MainActivity extends BaseFragmentActivity implements MenuItemAdapte
         setEvents();
     }
 
-
-
     @Override
     protected void init() {
         settingFrgment = new SettingFrgment();

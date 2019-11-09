@@ -24,7 +24,6 @@ import java.util.Date;
 
 import androidx.cardview.widget.CardView;
 
-
 public class CalendarView extends LinearLayout implements View.OnClickListener {
     // calendar components
     private LinearLayout header;
@@ -79,7 +78,6 @@ public class CalendarView extends LinearLayout implements View.OnClickListener {
         inflater.inflate(R.layout.calendar_layout, this);
         assignUiElements();
         updateCalendar();
-
     }
 
     /**
@@ -157,6 +155,4 @@ public class CalendarView extends LinearLayout implements View.OnClickListener {
             }
         }
     }
-
-
 }
