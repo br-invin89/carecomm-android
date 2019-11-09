@@ -155,19 +155,15 @@ public class RegistrationActivity extends BaseFragmentActivity implements View.O
                             showDialog("Please check your password again!" , " OK","");
                             return;
                         }
-
-                        signup();
-                        return;
-                        /*
-
                         if (isTablet(context)) {
-                            register_Tablet();
+                            signup_tablet();
+                            return;
 
                         }else {
-                            //openActivity(context,MainActivity.class);
-                            register();
+                            signup();
+                            return;
                         }
-                        */
+
                 }
                 ReplaceFragment(new RegistrationFrgment(),true, bundle);
             }
@@ -202,168 +198,33 @@ public class RegistrationActivity extends BaseFragmentActivity implements View.O
         }
     }
 
-    /*
-    private void register() {
-
+    private void signup_tablet() {
         try {
-            userModel= new JSONObject();
-            userModel.put("username", Constants.register_username);
-            userModel.put("name",Constants.register_fullname);
-            userModel.put("email", Constants.register_email);
-            userModel.put("password", Constants.register_password);
-        }catch (Exception e){
+            SignupRequestModel request = new SignupRequestModel();
+            request.user = dataUser;
+            Call<SignupResponseModel> signupCall = ApiService.signup.signup(request);
+            signupCall.enqueue(new Callback<SignupResponseModel>() {
+                @Override
+                public void onResponse(Call<SignupResponseModel> call, Response<SignupResponseModel> response) {
+                    if (response.body() != null) {
+                        showDialog("User registration is success!" , " OK","");
+                        SignupResponseModel.UserModel user = response.body().user;
+                        Data.token = "Bearer "+user.token;
+                        openActivity(context, TabMainActivity.class);
+                    } else {
+                        showDialog("User registration is failed!" , " OK","");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<SignupResponseModel> call, Throwable t) {
+
+                }
+            });
+        }catch( Exception e) {
 
         }
-        try {
-            JsonObject_User = new JSONObject();
-            JsonObject_User.put("user", userModel);
-        }catch (Exception e){
-
-        }
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObject =new JsonObjectRequest(
-                Request.Method.POST,
-                register_url,
-                JsonObject_User, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    Constants.register_username = response.getJSONObject("user").getString("username");
-                    Constants.register_email = response.getJSONObject("user").getString("email");
-                    Constants.token = response.getJSONObject("user").getString("token");
-                    openActivity(context,MainActivity.class);
-                    finish();
-
-
-                } catch (JSONException e) {
-
-                    e.printStackTrace();
-                }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try {
-                    error_message_Json =new JSONObject(new String(error.networkResponse.data));
-                    error_message_String = new String(new String(error.networkResponse.data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    String error_username = error_message_Json.getString("errors");
-                    AlertDialog alertDialog = new AlertDialog.Builder(RegistrationActivity.this).create();
-                    alertDialog.setTitle("Alert");
-                    alertDialog.setMessage(error_username);
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            });
-                    alertDialog.show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        });
-
-        int custom_timeout_ms = 50000;
-        DefaultRetryPolicy policy = new DefaultRetryPolicy(custom_timeout_ms,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        jsonObject.setRetryPolicy(policy);
-        requestQueue.add(jsonObject);
-
     }
-
-    private void register_Tablet() {
-
-        try {
-            userModel= new JSONObject();
-            userModel.put("username", Constants.register_username);
-            userModel.put("name",Constants.register_fullname);
-            userModel.put("email", Constants.register_email);
-            userModel.put("password", Constants.register_password);
-        }catch (Exception e){
-
-        }
-        try {
-            JsonObject_User = new JSONObject();
-            JsonObject_User.put("user", userModel);
-        }catch (Exception e){
-
-        }
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObject =new JsonObjectRequest(
-                Request.Method.POST,
-                register_url,
-                JsonObject_User, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    Constants.register_username = response.getJSONObject("user").getString("username");
-                    Constants.register_email = response.getJSONObject("user").getString("email");
-                    Constants.token = response.getJSONObject("user").getString("token");
-                    openActivity(context,TabMainActivity.class);
-                    finish();
-
-
-                } catch (JSONException e) {
-
-                    e.printStackTrace();
-                }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try {
-                    error_message_Json =new JSONObject(new String(error.networkResponse.data));
-                    error_message_String = new String(new String(error.networkResponse.data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    String error_username = error_message_Json.getString("errors");
-                    AlertDialog alertDialog = new AlertDialog.Builder(RegistrationActivity.this).create();
-                    alertDialog.setTitle("Alert");
-                    alertDialog.setMessage(error_username);
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            });
-                    alertDialog.show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        });
-
-        int custom_timeout_ms = 50000;
-        DefaultRetryPolicy policy = new DefaultRetryPolicy(custom_timeout_ms,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        jsonObject.setRetryPolicy(policy);
-        requestQueue.add(jsonObject);
-
-    }
-
-     */
 
 
 }

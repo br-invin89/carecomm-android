@@ -218,6 +218,7 @@ public class ForgetPasswordActivity extends BaseFragmentActivity implements View
                     showDialog("Password reset failed.", "Ok", "");
                 }
                 openActivity(context, LoginActivity.class);
+
             }
 
             @Override
