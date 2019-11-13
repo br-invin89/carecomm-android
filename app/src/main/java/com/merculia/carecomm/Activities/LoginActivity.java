@@ -104,7 +104,16 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
         }
 
         if (view == btnLogin){
-            tryLogin();
+
+            if (isTablet(context)) {
+//                openActvity(context, TabMainActivity.class);
+                tablet_tryLogin();
+
+            }else {
+//                openActvity(context,MainActivity.class);
+                tryLogin();
+            }
+//            finish();
         }
 
         if (view == wifiConnect){
@@ -156,4 +165,45 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(),"Login failed because of server problem.", Toast.LENGTH_SHORT).show();
         }
     }
+    private void tablet_tryLogin() {
+        String username = edtUsername.getText().toString();
+        String password = edtPassword.getText().toString();
+        if(password.equals("")){
+            Toast.makeText(getApplicationContext(),"Please insert Password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(username.equals("")){
+            Toast.makeText(getApplicationContext(),"Please insert username", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AuthRequestModel.UserModel user = new AuthRequestModel.UserModel();
+        user.username = username;
+        user.password = password;
+        AuthRequestModel request = new AuthRequestModel();
+        request.setUser(user);
+
+        try {
+            Call<AuthResponseModel> authCall = ApiService.auth.tryLogin(request);
+            authCall.enqueue(new Callback<AuthResponseModel>() {
+                @Override
+                public void onResponse(Call<AuthResponseModel> call, Response<AuthResponseModel> response) {
+                    if (response.body() != null) {
+                        AuthResponseModel.UserModel user = response.body().getUser();
+                        Data.token = "Bearer "+user.token;
+                        openActivity(context, TabMainActivity.class);                    } else {
+                        Toast.makeText(getApplicationContext(),"Incorrect username or password.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AuthResponseModel> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(),"Login failed because of server problem.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(),"Login failed because of server problem.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
